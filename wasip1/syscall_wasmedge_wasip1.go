@@ -147,11 +147,11 @@ func sock_connect(fd int32, addr unsafe.Pointer) syscall.Errno
 
 //go:wasmimport wasi_snapshot_preview1 sock_set_reuse_addr
 //go:noescape
-func sock_set_reuse_addr(fd int32, isEnabled bool) syscall.Errno
+func sock_set_reuse_addr(fd int32, isEnabled int32) syscall.Errno
 
 //go:wasmimport wasi_snapshot_preview1 sock_set_broadcast
 //go:noescape
-func sock_set_broadcast(fd int32, isEnabled bool) syscall.Errno
+func sock_set_broadcast(fd int32, isEnabled int32) syscall.Errno
 
 //go:wasmimport wasi_snapshot_preview1 sock_addr_local
 //go:noescape
@@ -318,7 +318,7 @@ func shutdown(fd, how int) error {
 }
 
 func sockopt_set_broadcast(fd int, value bool) error {
-	errno := sock_set_broadcast(int32(fd), value)
+	errno := sock_set_broadcast(int32(fd), int32(value))
 	if errno != 0 {
 		return errno
 	}
@@ -326,7 +326,7 @@ func sockopt_set_broadcast(fd int, value bool) error {
 }
 
 func sockopt_set_reuse_addr(fd int, value bool) error {
-	errno := sock_set_reuse_addr(int32(fd), value)
+	errno := sock_set_reuse_addr(int32(fd), int32(value))
 	if errno != 0 {
 		return errno
 	}
