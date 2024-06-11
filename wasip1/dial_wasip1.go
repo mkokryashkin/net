@@ -188,7 +188,7 @@ func dialAddr(ctx context.Context, addr net.Addr) (net.Conn, error) {
 			var err error
 			rawConnErr := rawConn.Write(func(fd uintptr) bool {
 				var value int
-				value, err = syscall.Write(fd, make([]byte, 0))
+				value, err = syscall.Write(int(fd), make([]byte, 0))
 				if err != nil {
 					return true // done
 				}

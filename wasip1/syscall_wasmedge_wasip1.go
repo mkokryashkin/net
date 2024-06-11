@@ -317,15 +317,6 @@ func shutdown(fd, how int) error {
 	return nil
 }
 
-func getsockopt(fd, level, opt int) (value int, err error) {
-	var n int32
-	errno := sock_getsockopt(int32(fd), uint32(level), uint32(opt), unsafe.Pointer(&n), 4)
-	if errno != 0 {
-		return 0, errno
-	}
-	return int(n), nil
-}
-
 func sockopt_set_broadcast(fd int, value bool) error {
 	errno := sock_set_broadcast(int32(fd), value)
 	if errno != 0 {
