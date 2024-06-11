@@ -317,7 +317,7 @@ func shutdown(fd, how int) error {
 	return nil
 }
 
-func sockopt_set_broadcast(fd int, value bool) error {
+func sockopt_set_broadcast(fd int, value int) error {
 	errno := sock_set_broadcast(int32(fd), int32(value))
 	if errno != 0 {
 		return errno
@@ -325,7 +325,7 @@ func sockopt_set_broadcast(fd int, value bool) error {
         return nil
 }
 
-func sockopt_set_reuse_addr(fd int, value bool) error {
+func sockopt_set_reuse_addr(fd int, value int) error {
 	errno := sock_set_reuse_addr(int32(fd), int32(value))
 	if errno != 0 {
 		return errno

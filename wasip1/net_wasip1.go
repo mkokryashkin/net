@@ -171,7 +171,7 @@ func setNonBlock(fd int) error {
 }
 
 func setReuseAddress(fd int) error {
-	if err := sockopt_set_reuse_addr(fd, true); err != nil {
+	if err := sockopt_set_reuse_addr(fd, 1); err != nil {
 		// The runtime may not support the option; if that's the case and the
 		// address is already in use, binding the socket will fail and we will
 		// report the error then.

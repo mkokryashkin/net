@@ -134,7 +134,7 @@ func dialAddr(ctx context.Context, addr net.Addr) (net.Conn, error) {
 		return nil, err
 	}
 	if sotype == SOCK_DGRAM && proto != AF_UNIX {
-		if err := sockopt_set_broadcast(fd, true); err != nil {
+		if err := sockopt_set_broadcast(fd, 1); err != nil {
 			// If the system does not support broadcast we should still be able
 			// to use the datagram socket.
 			switch {
