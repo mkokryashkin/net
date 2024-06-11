@@ -134,7 +134,7 @@ func dialAddr(ctx context.Context, addr net.Addr) (net.Conn, error) {
 		return nil, err
 	}
 	if sotype == SOCK_DGRAM && proto != AF_UNIX {
-		if err := setsockopt(fd, SOL_SOCKET, SO_BROADCAST, 1); err != nil {
+		if err := sockopt_set_broadcast(fd, true); err != nil {
 			// If the system does not support broadcast we should still be able
 			// to use the datagram socket.
 			switch {
@@ -188,7 +188,7 @@ func dialAddr(ctx context.Context, addr net.Addr) (net.Conn, error) {
 			var err error
 			rawConnErr := rawConn.Write(func(fd uintptr) bool {
 				var value int
-				value, err = getsockopt(int(fd), SOL_SOCKET, SO_ERROR)
+				value, err = syscall.Write(fd, make([]byte, 0))
 				if err != nil {
 					return true // done
 				}

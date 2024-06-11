@@ -145,21 +145,21 @@ func sock_listen(fd int32, backlog int32) syscall.Errno
 //go:noescape
 func sock_connect(fd int32, addr unsafe.Pointer) syscall.Errno
 
-//go:wasmimport wasi_snapshot_preview1 sock_getsockopt
+//go:wasmimport wasi_snapshot_preview1 sock_set_reuse_addr
 //go:noescape
-func sock_getsockopt(fd int32, level uint32, name uint32, value unsafe.Pointer, valueLen uint32) syscall.Errno
+func sock_set_reuse_addr(fd int32, isEnabled bool) syscall.Errno
 
-//go:wasmimport wasi_snapshot_preview1 sock_setsockopt
+//go:wasmimport wasi_snapshot_preview1 sock_set_broadcast
 //go:noescape
-func sock_setsockopt(fd int32, level uint32, name uint32, value unsafe.Pointer, valueLen uint32) syscall.Errno
+func sock_set_broadcast(fd int32, isEnabled bool) syscall.Errno
 
-//go:wasmimport wasi_snapshot_preview1 sock_getlocaladdr
+//go:wasmimport wasi_snapshot_preview1 sock_addr_local
 //go:noescape
-func sock_getlocaladdr(fd int32, addr unsafe.Pointer, port unsafe.Pointer) syscall.Errno
+func sock_addr_local(fd int32, addr unsafe.Pointer) syscall.Errno
 
-//go:wasmimport wasi_snapshot_preview1 sock_getpeeraddr
+//go:wasmimport wasi_snapshot_preview1 sock_addr_remote
 //go:noescape
-func sock_getpeeraddr(fd int32, addr unsafe.Pointer, port unsafe.Pointer) syscall.Errno
+func sock_addr_remote(fd int32, addr unsafe.Pointer) syscall.Errno
 
 //go:wasmimport wasi_snapshot_preview1 sock_recv_from
 //go:noescape
@@ -326,13 +326,20 @@ func getsockopt(fd, level, opt int) (value int, err error) {
 	return int(n), nil
 }
 
-func setsockopt(fd, level, opt int, value int) error {
-	var n = int32(value)
-	errno := sock_setsockopt(int32(fd), uint32(level), uint32(opt), unsafe.Pointer(&n), 4)
+func sockopt_set_broadcast(fd int, value bool) error {
+	errno := sock_set_broadcast(int32(fd), value)
 	if errno != 0 {
 		return errno
 	}
-	return nil
+        return nil
+}
+
+func sockopt_set_reuse_addr(fd int, value bool) error {
+	errno := sock_set_reuse_addr(int32(fd), value)
+	if errno != 0 {
+		return errno
+	}
+        return nil
 }
 
 func getsockname(fd int) (sa sockaddr, err error) {
@@ -342,7 +349,7 @@ func getsockname(fd int) (sa sockaddr, err error) {
 		bufLen: uint32(unsafe.Sizeof(rsa)),
 	}
 	var port uint32
-	errno := sock_getlocaladdr(int32(fd), unsafe.Pointer(&buf), unsafe.Pointer(&port))
+	errno := sock_addr_local(int32(fd), unsafe.Pointer(&buf))
 	if errno != 0 {
 		return nil, errno
 	}
@@ -356,7 +363,7 @@ func getpeername(fd int) (sockaddr, error) {
 		bufLen: uint32(unsafe.Sizeof(rsa)),
 	}
 	var port uint32
-	errno := sock_getpeeraddr(int32(fd), unsafe.Pointer(&buf), unsafe.Pointer(&port))
+	errno := sock_addr_remote(int32(fd), unsafe.Pointer(&buf))
 	if errno != 0 {
 		return nil, errno
 	}
