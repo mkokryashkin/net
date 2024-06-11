@@ -135,7 +135,7 @@ func sock_open(poolfd int32, af int32, socktype int32, fd unsafe.Pointer) syscal
 
 //go:wasmimport wasi_snapshot_preview1 sock_bind
 //go:noescape
-func sock_bind(fd int32, addr unsafe.Pointer, port uint32) syscall.Errno
+func sock_bind(fd int32, addr unsafe.Pointer) syscall.Errno
 
 //go:wasmimport wasi_snapshot_preview1 sock_listen
 //go:noescape
@@ -143,7 +143,7 @@ func sock_listen(fd int32, backlog int32) syscall.Errno
 
 //go:wasmimport wasi_snapshot_preview1 sock_connect
 //go:noescape
-func sock_connect(fd int32, addr unsafe.Pointer, port uint32) syscall.Errno
+func sock_connect(fd int32, addr unsafe.Pointer) syscall.Errno
 
 //go:wasmimport wasi_snapshot_preview1 sock_getsockopt
 //go:noescape
@@ -169,7 +169,6 @@ func sock_recv_from(
 	iovsCount int32,
 	addr unsafe.Pointer,
 	iflags int32,
-	port unsafe.Pointer,
 	nread unsafe.Pointer,
 	oflags unsafe.Pointer,
 ) syscall.Errno
@@ -216,7 +215,7 @@ func bind(fd int, sa sockaddr) error {
 	if err != nil {
 		return err
 	}
-	errno := sock_bind(int32(fd), rawaddr, uint32(sa.sockport()))
+	errno := sock_bind(int32(fd), rawaddr)
 	runtime.KeepAlive(sa)
 	if errno != 0 {
 		return errno
@@ -236,7 +235,7 @@ func connect(fd int, sa sockaddr) error {
 	if err != nil {
 		return err
 	}
-	errno := sock_connect(int32(fd), rawaddr, uint32(sa.sockport()))
+	errno := sock_connect(int32(fd), rawaddr)
 	runtime.KeepAlive(sa)
 	if errno != 0 {
 		return errno
@@ -268,7 +267,6 @@ func recvfrom(fd int, iovs [][]byte, flags int32) (n int, addr rawSockaddrAny, p
 		int32(len(iovsBuf)),
 		unsafe.Pointer(&addrBuf),
 		flags,
-		unsafe.Pointer(&port),
 		unsafe.Pointer(&nread),
 		unsafe.Pointer(&oflags),
 	)
