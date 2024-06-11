@@ -128,6 +128,7 @@ type rawSockaddrAny struct {
 	addr   [126]byte
 }
 
+// poolfd is unused for now
 //go:wasmimport wasi_snapshot_preview1 sock_open
 //go:noescape
 func sock_open(poolfd int32, af int32, socktype int32, fd unsafe.Pointer) syscall.Errno
