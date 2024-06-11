@@ -130,7 +130,7 @@ type rawSockaddrAny struct {
 
 //go:wasmimport wasi_snapshot_preview1 sock_open
 //go:noescape
-func sock_open(af int32, socktype int32, fd unsafe.Pointer) syscall.Errno
+func sock_open(poolfd int32, af int32, socktype int32, fd unsafe.Pointer) syscall.Errno
 
 //go:wasmimport wasi_snapshot_preview1 sock_bind
 //go:noescape
@@ -203,7 +203,7 @@ func sock_shutdown(fd, how int32) syscall.Errno
 
 func socket(proto, sotype, unused int) (fd int, err error) {
 	var newfd int32
-	errno := sock_open(int32(proto), int32(sotype), unsafe.Pointer(&newfd))
+	errno := sock_open(0, int32(proto), int32(sotype), unsafe.Pointer(&newfd))
 	if errno != 0 {
 		return -1, errno
 	}
