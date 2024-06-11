@@ -167,10 +167,9 @@ func sock_recv_from(
 	fd int32,
 	iovs unsafe.Pointer,
 	iovsCount int32,
-	addr unsafe.Pointer,
 	iflags int32,
+	addr unsafe.Pointer,
 	nread unsafe.Pointer,
-	oflags unsafe.Pointer,
 ) syscall.Errno
 
 //go:wasmimport wasi_snapshot_preview1 sock_send_to
@@ -265,10 +264,9 @@ func recvfrom(fd int, iovs [][]byte, flags int32) (n int, addr rawSockaddrAny, p
 		int32(fd),
 		unsafe.Pointer(unsafe.SliceData(iovsBuf)),
 		int32(len(iovsBuf)),
-		unsafe.Pointer(&addrBuf),
 		flags,
+		unsafe.Pointer(&addrBuf),
 		unsafe.Pointer(&nread),
-		unsafe.Pointer(&oflags),
 	)
 	if errno != 0 {
 		return int(nread), addr, port, oflags, errno
