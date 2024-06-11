@@ -14,8 +14,7 @@ import (
 )
 
 const (
-	AF_UNSPEC = iota
-	AF_INET
+	AF_INET = iota
 	AF_INET6
 	AF_UNIX
 )
@@ -57,6 +56,7 @@ type sockaddr interface {
 }
 
 type sockaddrInet4 struct {
+        kind  uint32
 	addr [4]byte
 	port uint32
 	raw  addressBuffer
@@ -64,8 +64,8 @@ type sockaddrInet4 struct {
 
 func (s *sockaddrInet4) sockaddr() (unsafe.Pointer, error) {
 	s.raw.bufLen = 4
-	s.raw.buf = uintptr32(uintptr(unsafe.Pointer(&s.addr)))
-	return unsafe.Pointer(&s.raw), nil
+	s.raw.buf = uintptr32(uintptr(unsafe.Pointer(&s.kind)))
+	return unsafe.Pointer(s), nil
 }
 
 func (s *sockaddrInet4) sockport() int {
@@ -73,6 +73,7 @@ func (s *sockaddrInet4) sockport() int {
 }
 
 type sockaddrInet6 struct {
+        kind  uint32
 	addr [16]byte
 	port uint32
 	zone uint32
@@ -84,7 +85,7 @@ func (s *sockaddrInet6) sockaddr() (unsafe.Pointer, error) {
 		return nil, syscall.ENOTSUP
 	}
 	s.raw.bufLen = 16
-	s.raw.buf = uintptr32(uintptr(unsafe.Pointer(&s.addr)))
+	s.raw.buf = uintptr32(uintptr(unsafe.Pointer(&s.kind)))
 	return unsafe.Pointer(&s.raw), nil
 }
 

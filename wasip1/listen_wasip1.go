@@ -78,7 +78,6 @@ func listenAddr(addr net.Addr) (net.Listener, error) {
 	}
 
 	bindAddr, err := socketAddress(addr)
-        fmt.Printf("%v %v", bindAddr, err)
 	if err != nil {
 		return nil, os.NewSyscallError("bind", err)
 	}

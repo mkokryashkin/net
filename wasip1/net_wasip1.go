@@ -69,9 +69,9 @@ func socketAddress(addr net.Addr) (sockaddr, error) {
 		return &sockaddrUnix{name: a.Name}, nil
 	}
 	if ipv4 := ip.To4(); ipv4 != nil {
-		return &sockaddrInet4{addr: ([4]byte)(ipv4), port: uint32(port)}, nil
+                return &sockaddrInet4{kind: AF_INET, addr: ([4]byte)(ipv4), port: uint32(port)}, nil
 	} else if len(ip) == net.IPv6len {
-		return &sockaddrInet6{addr: ([16]byte)(ip), port: uint32(port)}, nil
+                return &sockaddrInet6{kind: AF_INET6, addr: ([16]byte)(ip), port: uint32(port)}, nil
 	} else {
 		return nil, &net.AddrError{
 			Err:  "unsupported address type",
