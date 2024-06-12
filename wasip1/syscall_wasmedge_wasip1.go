@@ -185,13 +185,11 @@ func sock_send_to(
 	nwritten unsafe.Pointer,
 ) syscall.Errno
 
-//go:wasmimport wasi_snapshot_preview1 sock_getaddrinfo
+//go:wasmimport wasi_snapshot_preview1 sock_addr_resolve
 //go:noescape
-func sock_getaddrinfo(
+func sock_addr_resolve(
 	node unsafe.Pointer,
-	nodeLen uint32,
 	service unsafe.Pointer,
-	serviceLen uint32,
 	hints unsafe.Pointer,
 	res unsafe.Pointer,
 	maxResLen uint32,
@@ -452,15 +450,13 @@ func getaddrinfo(name, service string, hints *addrInfo, results []addrInfo) (int
 
 	resPtr := uintptr32(uintptr(unsafe.Pointer(&results[0].sockAddrInfo)))
 	// For compatibility with WasmEdge, make sure strings are null-terminated.
-	namePtr, nameLen := nullTerminatedString(name)
-	servPtr, servLen := nullTerminatedString(service)
+	namePtr, _ := nullTerminatedString(name)
+	servPtr, _ := nullTerminatedString(service)
 
 	var n uint32
-	errno := sock_getaddrinfo(
+	errno := sock_addr_resolve(
 		unsafe.Pointer(namePtr),
-		uint32(nameLen),
 		unsafe.Pointer(servPtr),
-		uint32(servLen),
 		unsafe.Pointer(&hints.sockAddrInfo),
 		unsafe.Pointer(&resPtr),
 		uint32(len(results)),
