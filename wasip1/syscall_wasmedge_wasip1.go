@@ -363,11 +363,11 @@ func getpeername(fd int) (sockaddr, error) {
 func anyToSockaddr(rsa *rawSockaddrAny, port uint32) (sockaddr, error) {
 	switch rsa.family {
 	case AF_INET:
-		addr := sockaddrInet4{port: port}
+                addr := sockaddrInet4{kind: AF_INET, port: port}
 		copy(addr.addr[:], rsa.addr[:])
 		return &addr, nil
 	case AF_INET6:
-		addr := sockaddrInet6{port: port}
+                addr := sockaddrInet6{kind: AF_INET6, port: port}
 		copy(addr.addr[:], rsa.addr[:])
 		return &addr, nil
 	case AF_UNIX:
